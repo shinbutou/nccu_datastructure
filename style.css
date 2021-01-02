@@ -1,0 +1,89 @@
+body{
+    margin-left: 1%;
+    margin-right: 1%;
+    width: 98%;
+    height: 100%;
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    font-size:1rem;
+    font-weight:400;
+    line-height:1.2;
+    text-align:left;
+}
+
+.section-title
+{
+    color: #303030;
+    font-size: larger;
+    font-weight: 700;
+    margin-bottom: 2;
+}
+
+.pane-title
+{
+    color: #303030;
+    padding: 0;
+    margin: 0;
+}
+
+.category-title
+{
+    font-weight: 600;
+    padding: 0;
+    margin: 0;
+    color: white;
+}
+
+.vertical-center
+{
+    /*margin-bottom: 5px;*/
+    position: relative;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.input
+{
+    margin-bottom: 5px;
+    width: 30%;
+    height: 5%;
+    color: white;
+    border-collapse: collapse;
+}
+
+.results
+{
+    border-radius: 5px;
+    padding: 6px;
+    width: 50%;
+    height: 64%;
+    color: white;
+    border-collapse: collapse;
+    margin-bottom:0.5%;
+}
+
+.result_panel
+{
+    overflow: auto;
+    position: relative;
+    border: 0;
+    margin: 0.75rem;
+}
+
+.result_panel::-webkit-scrollbar
+{
+    display: none !important; 
+}
+/* somehow, this has stopped working with bootstrap imported */
+
+.result_block
+{
+    font-size: 0.95rem;
+    text-align: justify;
+    color:#222222;
+    text-decoration: none;
+    margin: 1px;
+    padding: 9px;
+    background-color: #EBEDEF;
+    cursor: pointer;
+}
