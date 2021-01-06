@@ -3,13 +3,20 @@
 public class UrlResult {
 
 	public String url;
+	
 	public String attribute;
-    public double weight;
+    
+	public double weight;
+	
+	
     
     public UrlResult(String url, String attribute, double weight){
-		this.url = url;
-		this.attribute = attribute;
-		this.weight = weight;
+		
+    	this.url = url;
+		
+    	this.attribute = attribute;
+		
+    	this.weight = weight;
     }
     
     @Override
