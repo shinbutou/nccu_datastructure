@@ -15,7 +15,7 @@ body{
     color: #303030;
     font-size: larger;
     font-weight: 700;
-    margin-bottom: 2;
+    margin-bottom: 4;
 }
 
 .pane-title
@@ -58,6 +58,12 @@ body{
     height: 5%;
     color: white;
     border-collapse: collapse;
+}
+
+.basic_info
+{
+    padding: 0.4rem;
+    margin: 0.3rem;
 }
 
 .info_cell

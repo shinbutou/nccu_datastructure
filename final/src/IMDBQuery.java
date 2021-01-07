@@ -4,10 +4,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Scanner;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
+//import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import java.util.*;
 
@@ -32,10 +32,11 @@ public class IMDBQuery {
 	
 	public IMDBQuery(String searchKeyword){
 		
-		IMDBQuery.searchKeyword=searchKeyword.trim().replace(" ","+");
+		IMDBQuery.searchKeyword=searchKeyword;
 
 		this.url = "https://www.imdb.com/find?q="+searchKeyword+"&oe=utf8&num=20";
 
+		
 	}
 
 	
@@ -43,6 +44,13 @@ public class IMDBQuery {
 		  //String retVal = "";
 			URL u = new URL(url);
 			URLConnection conn = u.openConnection();
+			
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			InputStream in = conn.getInputStream();
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String retVal = "";
@@ -70,8 +78,14 @@ public class IMDBQuery {
 		String retVal = "";
 
 		URL u = new URL(fetchContent_url());
-
 		URLConnection conn = u.openConnection();
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		conn.setRequestProperty("User-agent", "Chrome/7.0.517.44");
 
@@ -98,12 +112,23 @@ public class IMDBQuery {
 			content=fetchContent();
 			
 		}
-		
+	
 		Document doc=Jsoup.parse(content);
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		Elements doc2=doc.select("div.credit_summary_item");
 		String doc3=doc2.text();
 		String director=doc3.substring(doc3.indexOf(":")+1,doc3.indexOf("Writer"));
 		String writers=doc3.substring(doc3.indexOf(":",doc3.indexOf(":")+1)+1,doc3.indexOf("Stars"));
+		
+		//System.out.println(doc2);												//test line
+		//System.out.println(doc3);												//test line
 		
 		if(writers.contains("|")) {
 			
@@ -141,116 +166,51 @@ public class IMDBQuery {
 	
 		private void addList(String [] inputArray, List<Keyword> outputList,
 												String type){
-			double priorityWeight = 1;
+			
 			double typeWeight;
+			double[] weightDir = {1, 0.7, 0.65};
+			double[] weightWri = {1, 0.85, 0.8};
+			double[] weightSta = {1, 0.9, 0.85};
 			
 			if (type.equals("directors")) {
 				
 				typeWeight = 2;
 				
-				if (inputArray.length == 3) {
+				for (int i = 0; i < inputArray.length;i++) {
 					
-					outputList.add(new Keyword(inputArray[0],typeWeight*1));
-					outputList.add(new Keyword(inputArray[1],typeWeight*0.7));
-					outputList.add(new Keyword(inputArray[2],typeWeight*0.65));
-					
+					double weight = weightDir[i] * typeWeight;
+					Keyword keyword = new Keyword(inputArray[i],weight);
+						
+					outputList.add(keyword);
 				}
-				
-				else if (inputArray.length == 2) {
-					
-					outputList.add(new Keyword(inputArray[0],typeWeight*1));
-					outputList.add(new Keyword(inputArray[1],typeWeight*0.7));
-				}
-				
-				else {
-					
-					outputList.add(new Keyword(inputArray[0],typeWeight*1));
-					
-				}
-				
 			}
 			
 			else if (type.equals("writer")) {
 				
-				typeWeight = 1.75;
+				typeWeight = 1.75;	
 				
-				if (inputArray.length == 3) {
+				for (int i = 0; i < inputArray.length;i++) {
 					
-					outputList.add(new Keyword(inputArray[0],typeWeight*1));
-					outputList.add(new Keyword(inputArray[1],typeWeight*0.85));
-					outputList.add(new Keyword(inputArray[2],typeWeight*0.8));
-					
+					double weight = weightWri[i] * typeWeight;
+					Keyword keyword = new Keyword(inputArray[i],weight);
+						
+					outputList.add(keyword);
 				}
-				
-				else if (inputArray.length == 2) {
-					
-					outputList.add(new Keyword(inputArray[0],typeWeight*1));
-					outputList.add(new Keyword(inputArray[1],typeWeight*0.85));
-				}
-				
-				else {
-					
-					outputList.add(new Keyword(inputArray[0],typeWeight*1));
-					
-				}
-				
-				
 			}
 			
 			else {
 				
 				typeWeight = 1.66;
 				
-				if (inputArray.length == 3) {
+				for (int i = 0; i < inputArray.length;i++) {
 					
-					outputList.add(new Keyword(inputArray[0],typeWeight*1));
-					outputList.add(new Keyword(inputArray[1],typeWeight*0.9));
-					outputList.add(new Keyword(inputArray[2],typeWeight*0.85));
-					
+					double weight = weightSta[i] * typeWeight;
+					Keyword keyword = new Keyword(inputArray[i],weight);
+						
+					outputList.add(keyword);
 				}
-				
-				else if (inputArray.length == 2) {
-					
-					outputList.add(new Keyword(inputArray[0],typeWeight*1));
-					outputList.add(new Keyword(inputArray[1],typeWeight*0.9));
-				}
-				
-				else {
-					
-					outputList.add(new Keyword(inputArray[0],typeWeight*1));
-					
-				}
-				
 				
 			}
-			
-			
-			/*for (String element:inputArray) {
-				
-				double weight = priorityWeight * typeWeight;
-				Keyword keyword = new Keyword(element,weight);
-				
-				outputList.add(keyword);
-				
-				if (type.equals("directors")) {
-					
-					priorityWeight -= 0.3;
-					
-				}
-				
-				else if (type.equals("writer")) {
-					
-					priorityWeight -= 0.15;
-					
-				}
-				
-				else {
-					
-					priorityWeight -= 0.1;
-					
-				}
-			}*/
-			
 			return;
 		}
 			

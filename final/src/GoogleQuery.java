@@ -14,13 +14,13 @@ import java.util.*;
 
 
 
-import org.jsoup.Jsoup;
+/*import org.jsoup.Jsoup;
 
 import org.jsoup.nodes.Document;
 
 import org.jsoup.nodes.Element;
 
-import org.jsoup.select.Elements;
+import org.jsoup.select.Elements*/
 
 public class GoogleQuery {
 
@@ -32,48 +32,65 @@ public class GoogleQuery {
 	
 	/*public GoogleQuery(){
 		
-		this.url_google = "https://www.google.com/search?q=top+gun+Tom+Scott";	
+		this.url_google = "https://www.google.com/search?q=top+gun+Tom+Scott+'film'or'series'or'television'or'movie'+-site:www.imdb.com+-site:www.rottentomatoes.com+-site:wikipedia.org+-site:www.pinterest.com+-site:www.amazon.com";	
 	}
     */
 	
 	
 	public GoogleQuery(String searchKeyword){
 		
-		this.url_google = "https://www.google.com/search?q=" + searchKeyword + "&oe=utf8&num=20";	
+		this.url_google ="https://www.google.com/search?q=" + searchKeyword + "&oe=utf8&num=20";	
 	}
 
 	
 
-	private String fetchContent() throws IOException
+		/*private String fetchContent() throws IOException
 
-	{
-		String retVal = "";
-
-		URL u = new URL(url_google);
-
-		URLConnection conn = u.openConnection();
-
-		conn.setRequestProperty("User-agent", "Chrome/7.0.517.44");
-
-		InputStream in = conn.getInputStream();
-
-		InputStreamReader inReader = new InputStreamReader(in,"utf-8");
-
-		BufferedReader bufReader = new BufferedReader(inReader);
-		String line = null;
-
-		while((line=bufReader.readLine())!=null)
 		{
-			retVal += line;
-
-		}
-		return retVal;
-	}
+			String retVal = "";
+	
+			URL u = new URL(url_google);
+	
+			URLConnection conn = u.openConnection();
+			conn.setRequestProperty("User-agent","Chrome/7.0.517.44 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2)");
+			
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	
+	
+			InputStream in = conn.getInputStream();
+	
+			InputStreamReader inReader = new InputStreamReader(in,"utf-8");
+	
+			BufferedReader bufReader = new BufferedReader(inReader);
+			String line = null;
+	
+			while((line=bufReader.readLine())!=null)
+			{
+				retVal += line;
+	
+			}
+			return retVal;
+		}*/
 	
 	 public List<UrlTempResult> fetchContent_url() throws IOException{
 		  
 			URL u = new URL(url_google);
 			URLConnection conn = u.openConnection();
+			conn.setRequestProperty("User-agent","Chrome/7.0.517.44 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2)");
+			
+			try {
+				Thread.sleep(2000);
+			} 
+			catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			InputStream in = conn.getInputStream();
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String retVal = "";
@@ -85,44 +102,41 @@ public class GoogleQuery {
 			    
 			}
 			
+			//System.out.println(retVal);											//test line
+			
 			List<UrlTempResult> tempList = new ArrayList<UrlTempResult>();
 			
-			int indexOfFir = retVal.indexOf("<a href=");
-			int indexOfSec = retVal.indexOf("<a href=",indexOfFir);
-			int indexOfThr = retVal.indexOf("<a href=",indexOfSec);
-			int indexOfFour = retVal.indexOf("<a href=",indexOfThr);
-			
-			int firstUrl = retVal.indexOf("<a href=",indexOfFour);
-			int closeFir = retVal.indexOf("\"",firstUrl);
-			String searchUrl1 = retVal.substring(firstUrl+9, closeFir);
-			UrlTempResult temp1 = new UrlTempResult(searchUrl1,1);
-			tempList.add(temp1);
-			
-			int secondUrl = retVal.indexOf("<a href=",closeFir);
-			int closeSec = retVal.indexOf("\"",secondUrl);
-			String searchUrl2 = retVal.substring(secondUrl+9,closeSec);
-			UrlTempResult temp2 = new UrlTempResult(searchUrl2,0.9);
-			tempList.add(temp2);
 			
 			
-			int thirdUrl = retVal.indexOf("<a href=",closeSec);
-			int closethir = retVal.indexOf("\"",thirdUrl);
-			String searchUrl3 = retVal.substring(thirdUrl+9,closethir);
-			UrlTempResult temp3 = new UrlTempResult(searchUrl3,0.8);
-			tempList.add(temp3);
+			int headOfUrl=0;
+			int tailOfUrl=0;
+			String searchUrl = "";
+			UrlTempResult temp;
+			int numberOfUrl = 10;
+			double urlWeight;
 			
-			int fourthUrl = retVal.indexOf("<a href=",closethir);
-			int closefour = retVal.indexOf("\"",fourthUrl);
-			String searchUrl4 = retVal.substring(fourthUrl+9,closefour);
-			UrlTempResult temp4 = new UrlTempResult(searchUrl4,0.7);
-			tempList.add(temp4);
+			for(double i = 0; i < numberOfUrl; i++) {
+				
+				
+				
+				urlWeight = (10-i)/10 ;
+				
+				
+				if (i==0) {
+					headOfUrl = retVal.indexOf("<a href=\"/url?q=");
+				}
+				else {
+					headOfUrl = retVal.indexOf("<a href=\"/url?q=", tailOfUrl);
+				}
+																//test line
+				tailOfUrl = retVal.indexOf("&amp", headOfUrl);
+				searchUrl = retVal.substring(headOfUrl+16, tailOfUrl);
+				temp = new UrlTempResult(searchUrl, urlWeight);
+				tempList.add(temp);
+				
 			
-			int fifthUrl = retVal.indexOf("<a href=",closefour);
-			int closefif = retVal.indexOf("\"",fifthUrl);
-			String searchUrl5 = retVal.substring(fifthUrl+9,closefif);
-			UrlTempResult temp5 = new UrlTempResult(searchUrl5,0.6);
-			tempList.add(temp5);
-			
+			}
+			//System.out.println(tempList);											//test line
 			return tempList; 
 			
 	    }
@@ -146,8 +160,11 @@ public class GoogleQuery {
 		Elements doc2 = doc.select(".kCrYT");
 		//String doc3 = doc2.text();				//test line
 		
-		//System.out.println(url_google);  			//test line 
+		
+		System.out.println();  						//test line
 		System.out.println(doc2);
+		System.out.println(url_google); 			//test line
+		System.out.println();  	
 		return doc2;
 
 	}*/

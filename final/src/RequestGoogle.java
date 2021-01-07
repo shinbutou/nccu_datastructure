@@ -1,16 +1,6 @@
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import org.jsoup.*;
-
-import org.jsoup.Jsoup;
-
-import org.jsoup.nodes.Document;
-
-import org.jsoup.nodes.Element;
-
-import org.jsoup.select.Elements;
 
 public class RequestGoogle {
 	
@@ -50,27 +40,31 @@ public class RequestGoogle {
 		
 		String decorations = "+\'film\'or\'series\'or\'television\'or\'movie\'";
 		
-		this.keywordToGoogle = movie + "+" + infoOfMovie + decorations 
+		this.keywordToGoogle = movie + "+" + infoOfMovie.replace(" ", "+") + decorations 
 				+ erasesite1 + erasesite2 + erasesite3 + erasesite4 + erasesite5;
 		
 	}
 	
-	public void RequestDir() {
+	private void RequestDir() {
 		
 		int countOfElements = IMDBQuery.Directors.size();
 		
 		for(int i = 0; i < countOfElements; i++) {
-			this.infoOfMovie = IMDBQuery.Directors.get(i).getName().trim().replace(" ", "+");
-			double weightOfInfo = IMDBQuery.Directors.get(i).getWeight();
+			this.infoOfMovie = IMDBQuery.Directors.get(i).name;
+			double weightOfInfo = IMDBQuery.Directors.get(i).weight;
 			SetKeywordToGoogle();
 			
 				try {
 					List<UrlTempResult> tempList = new GoogleQuery(keywordToGoogle).fetchContent_url();
-					String url = tempList.get(i).getUrl();
-					double weightOfUrl = tempList.get(i).getWeight();
-					System.out.println(tempList);														//test line
-					UrlResult tmpVar = new UrlResult(url, infoOfMovie, weightOfUrl*weightOfInfo);
-					Results.add(tmpVar);
+					
+					for(int j =0; j<tempList.size();j++) {
+						String url = tempList.get(j).url;
+						double weightOfUrl = tempList.get(j).urlWeight;
+						double finalWeight = weightOfUrl*weightOfInfo;
+						//System.out.println(tempList);															//test line
+						UrlResult tmpVar = new UrlResult(url, infoOfMovie, finalWeight);
+						Results.add(tmpVar);
+					}
 				} 
 				catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -85,17 +79,21 @@ public class RequestGoogle {
 		int countOfElements = IMDBQuery.Writers.size();
 		
 		for(int i = 0; i < countOfElements; i++) {
-			this.infoOfMovie = IMDBQuery.Writers.get(i).getName().trim().replace(" ", "+");
-			double weightOfInfo = IMDBQuery.Writers.get(i).getWeight();
+			this.infoOfMovie = IMDBQuery.Writers.get(i).name;
+			double weightOfInfo = IMDBQuery.Writers.get(i).weight;
 			SetKeywordToGoogle();
 			
 			try {
 				List<UrlTempResult> tempList = new GoogleQuery(keywordToGoogle).fetchContent_url();
-				String url = tempList.get(i).getUrl();
-				double weightOfUrl = tempList.get(i).getWeight();
-				System.out.println(tempList);															//test line
-				UrlResult tmpVar = new UrlResult(url, infoOfMovie, weightOfUrl*weightOfInfo);
-				Results.add(tmpVar);
+				
+				for(int j =0; j<tempList.size();j++) {
+					String url = tempList.get(j).url;
+					double weightOfUrl = tempList.get(j).urlWeight;
+					double finalWeight = weightOfUrl*weightOfInfo;
+					//System.out.println(tempList);															//test line
+					UrlResult tmpVar = new UrlResult(url, infoOfMovie, finalWeight);
+					Results.add(tmpVar);
+				}
 			} 
 			catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -104,22 +102,26 @@ public class RequestGoogle {
 		}
 	}
 	
-	public void RequestSta() {
+	private void RequestSta() {
 		
 		int countOfElements = IMDBQuery.Stars.size();
 		
 		for(int i = 0; i < countOfElements; i++) {
-			this.infoOfMovie = IMDBQuery.Stars.get(i).getName().trim().replace(" ", "+");
-			double weightOfInfo = IMDBQuery.Stars.get(i).getWeight();
+			this.infoOfMovie = IMDBQuery.Stars.get(i).name;
+			double weightOfInfo = IMDBQuery.Stars.get(i).weight;
 			SetKeywordToGoogle();
 			
 			try {
 				List<UrlTempResult> tempList = new GoogleQuery(keywordToGoogle).fetchContent_url();
-				String url = tempList.get(i).getUrl();
-				double weightOfUrl = tempList.get(i).getWeight();
-				System.out.println(tempList);															//test line
-				UrlResult tmpVar = new UrlResult(url, infoOfMovie, weightOfUrl*weightOfInfo);
-				Results.add(tmpVar);
+				
+				for(int j =0; j<tempList.size();j++) {
+					String url = tempList.get(j).url;
+					double weightOfUrl = tempList.get(j).urlWeight;
+					double finalWeight = weightOfUrl*weightOfInfo;
+					//System.out.println(tempList);															//test line
+					UrlResult tmpVar = new UrlResult(url, infoOfMovie, finalWeight);
+					Results.add(tmpVar);	
+				}
 			} 
 			catch (IOException e) {
 				// TODO Auto-generated catch block
