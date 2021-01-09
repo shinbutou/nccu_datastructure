@@ -12,6 +12,7 @@ public class RequestGoogle {
 	
 	public static List<UrlResult> Results= new ArrayList<UrlResult>();
 	
+	
 	public RequestGoogle() {
 		
 		this.movie = IMDBQuery.searchKeyword;
@@ -22,7 +23,9 @@ public class RequestGoogle {
 		
 		RequestDir();
 		RequestWri();
-		RequestSta();	
+		RequestSta();
+		removeSimilar();
+		
 		
 	}
 	
@@ -55,14 +58,19 @@ public class RequestGoogle {
 			SetKeywordToGoogle();
 			
 				try {
-					List<UrlTempResult> tempList = new GoogleQuery(keywordToGoogle).fetchContent_url();
+					List<UrlTempResult> tempList = new GoogleQuery(keywordToGoogle).query();
 					
 					for(int j =0; j<tempList.size();j++) {
+						
+						String topNameOfUrl = tempList.get(j).topName;
+						String titleOfUrl = tempList.get(j).title;
 						String url = tempList.get(j).url;
+						String introsOfUrl = tempList.get(j).intros;
 						double weightOfUrl = tempList.get(j).urlWeight;
 						double finalWeight = weightOfUrl*weightOfInfo;
+						
 						//System.out.println(tempList);															//test line
-						UrlResult tmpVar = new UrlResult(url, infoOfMovie, finalWeight);
+						UrlResult tmpVar = new UrlResult(topNameOfUrl, titleOfUrl, url, introsOfUrl, finalWeight);
 						Results.add(tmpVar);
 					}
 				} 
@@ -84,14 +92,18 @@ public class RequestGoogle {
 			SetKeywordToGoogle();
 			
 			try {
-				List<UrlTempResult> tempList = new GoogleQuery(keywordToGoogle).fetchContent_url();
+				List<UrlTempResult> tempList = new GoogleQuery(keywordToGoogle).query();
 				
 				for(int j =0; j<tempList.size();j++) {
+					
+					String topNameOfUrl = tempList.get(j).topName;
+					String titleOfUrl = tempList.get(j).title;
 					String url = tempList.get(j).url;
+					String introsOfUrl = tempList.get(j).intros;
 					double weightOfUrl = tempList.get(j).urlWeight;
 					double finalWeight = weightOfUrl*weightOfInfo;
-					//System.out.println(tempList);															//test line
-					UrlResult tmpVar = new UrlResult(url, infoOfMovie, finalWeight);
+																			
+					UrlResult tmpVar = new UrlResult(topNameOfUrl, titleOfUrl, url, introsOfUrl, finalWeight);
 					Results.add(tmpVar);
 				}
 			} 
@@ -112,14 +124,18 @@ public class RequestGoogle {
 			SetKeywordToGoogle();
 			
 			try {
-				List<UrlTempResult> tempList = new GoogleQuery(keywordToGoogle).fetchContent_url();
+				List<UrlTempResult> tempList = new GoogleQuery(keywordToGoogle).query();
 				
 				for(int j =0; j<tempList.size();j++) {
+					
+					String topNameOfUrl = tempList.get(j).topName;
+					String titleOfUrl = tempList.get(j).title;
 					String url = tempList.get(j).url;
+					String introsOfUrl = tempList.get(j).intros;
 					double weightOfUrl = tempList.get(j).urlWeight;
 					double finalWeight = weightOfUrl*weightOfInfo;
-					//System.out.println(tempList);															//test line
-					UrlResult tmpVar = new UrlResult(url, infoOfMovie, finalWeight);
+																	
+					UrlResult tmpVar = new UrlResult(topNameOfUrl, titleOfUrl, url, introsOfUrl, finalWeight);
 					Results.add(tmpVar);	
 				}
 			} 
@@ -129,4 +145,30 @@ public class RequestGoogle {
 			}
 		}
 	}
+	
+	private void removeSimilar() {
+		
+    	//***call this before rank elements
+    	int index = 0;
+    
+    	while(index < Results.size()) {
+    		int check = index+1;
+    		
+    		while (check < Results.size()) {
+    			if(Results.get(index).topName.equals(Results.get(check).topName)) {
+    				if(Results.get(index).weight >= Results.get(check).weight){
+    					Results.remove(check);
+    				}
+    				else {
+    					Results.remove(index);
+    				}
+    			}
+    			else {
+    				check++;
+    				
+    			}	
+    		}
+    		index++;
+    	}
+    }
 }

@@ -1,37 +1,49 @@
 
 
 public class UrlResult {
-
-	public String url;
 	
-	public String attribute;
-    
+	public String topName;
+	public String title;
+	public String url;
+	public String intros;
 	public double weight;
 	
 	
     
-    public UrlResult(String url, String attribute, double weight){
+    public UrlResult(String topName,String title,String url, String intros, double weight){
 		
+    	this.topName = topName;
+    	this.title = title;
     	this.url = url;
-		
-    	this.attribute = attribute;
-		
+    	this.intros = intros;
     	this.weight = weight;
+    	
     }
     
     @Override
     public String toString(){
-    	return "["+url+","+ attribute+","+weight+"]";
+    	return "["+topName+","+title+","+url+","+intros+","+weight+"]";
     }
     
-    public String getName()
+    public String gettopName()
+    {
+    	return topName;
+    }
+    
+    public String getTitle()
+    {
+    	return title;
+    }
+    
+    public String getUrl()
     {
     	return url;
     }
     
-    public String getAttribute()
+   
+    public String getIntros()
     {
-    	return attribute;
+    	return intros;
     }
     
     public double getWeight()

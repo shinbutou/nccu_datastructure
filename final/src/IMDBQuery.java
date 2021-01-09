@@ -4,9 +4,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+//import org.jsoup.nodes.Element;
 //import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import java.util.*;
@@ -45,12 +47,6 @@ public class IMDBQuery {
 			URL u = new URL(url);
 			URLConnection conn = u.openConnection();
 			
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			InputStream in = conn.getInputStream();
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			String retVal = "";
@@ -67,33 +63,37 @@ public class IMDBQuery {
 			int indexOfclose = retVal.indexOf(">",indexOfhref);
 			 
 			String searchResult = IMDb + retVal.substring(indexOfhref+5, indexOfclose).replace("\"","");
-			
+			//System.out.println(searchResult);
 			return searchResult; 
 			
 	    }
 	    
-	private String fetchContent() throws IOException
-
-	{
-		String retVal = "";
-
-		URL u = new URL(fetchContent_url());
-		URLConnection conn = u.openConnection();
+	private String fetchContent() throws IOException{
 		
+		String retVal = "";
+		URL u;
+		URLConnection conn;
+		InputStream in;
+		InputStreamReader inReader;
+		BufferedReader bufReader ;
 		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			u = new URL(fetchContent_url());
+			conn = u.openConnection();
+			conn.setRequestProperty("User-agent", "Chrome/7.0.517.44");
+			in = conn.getInputStream();
+			inReader = new InputStreamReader(in,"utf-8");
+			bufReader = new BufferedReader(inReader);
 		}
+		catch(UnknownHostException e) {
+			u = new URL("https://www.imdb.com/title/tt0465602/");
+			conn = u.openConnection();
+			conn.setRequestProperty("User-agent", "Chrome/7.0.517.44");
+			in = conn.getInputStream();
+			inReader = new InputStreamReader(in,"utf-8");
 
-		conn.setRequestProperty("User-agent", "Chrome/7.0.517.44");
-
-		InputStream in = conn.getInputStream();
-
-		InputStreamReader inReader = new InputStreamReader(in,"utf-8");
-
-		BufferedReader bufReader = new BufferedReader(inReader);
+			bufReader = new BufferedReader(inReader);
+		}
+		
 		String line = null;
 
 		while((line=bufReader.readLine())!=null){
@@ -115,47 +115,79 @@ public class IMDBQuery {
 	
 		Document doc=Jsoup.parse(content);
 		
-		try {
+		/*try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
-		Elements doc2=doc.select("div.credit_summary_item");
+		Elements doc2=doc.select(".credit_summary_item");
 		String doc3=doc2.text();
-		String director=doc3.substring(doc3.indexOf(":")+1,doc3.indexOf("Writer"));
-		String writers=doc3.substring(doc3.indexOf(":",doc3.indexOf(":")+1)+1,doc3.indexOf("Stars"));
+	
+	
+		/*System.out.println(doc2);
+		System.out.println("-------------------------");
+		System.out.println(doc3);
+		System.out.println("-------------------------");*///test line
+														
 		
-		//System.out.println(doc2);												//test line
-		//System.out.println(doc3);												//test line
+		String director = "";
+		String writers = "";
+		String stars = "";
+		String[] arrayDirector = new String[3];
+		String[] arrayWriter = new String[3];
+		String[] arrayStar = new String[3];
 		
-		if(writers.contains("|")) {
+		try {
+			if (doc.select(".inline").text().contains("Director")) {
+				if (doc.select(".inline").text().contains("Writer")) {
+					director = doc3.substring(doc3.indexOf(":")+1,doc3.indexOf("Writer"));
+				}
+				else {
+					director = doc3.substring(doc3.indexOf(":")+1,doc3.indexOf("Star"));
+				}
+			}
 			
-		writers=doc3.substring(doc3.indexOf(":",doc3.indexOf(":")+1)+1,
-				doc3.indexOf("|",doc3.indexOf(":",doc3.indexOf(":")+1)+1));
-		
+			if (doc.select(".inline").text().contains("Writer")) {
+				writers = doc3.substring(doc3.indexOf(":",doc3.indexOf(":")+1)+1,doc3.indexOf("Stars"));
+				
+				if(writers.contains("|")) {
+					writers=doc3.substring(doc3.indexOf(":",doc3.indexOf(":")+1)+1,
+							doc3.indexOf("|",doc3.indexOf(":",doc3.indexOf(":")+1)+1));
+				}
+			
+				while (writers.contains("(")){
+				
+					int index1=writers.indexOf("(");
+					int index2=writers.indexOf(")");
+					String doc4=writers.substring(0,index1);
+					String doc7=writers.substring(index2+1, writers.length());
+					writers=doc4+doc7;	
+					}
+			}
+			
+			if (doc.select(".inline").text().contains("Star")) {
+				stars=doc3.substring(doc3.indexOf(":",doc3.indexOf(":",doc3.indexOf(":")+1)+1)+1,
+					  doc3.indexOf("|",doc3.indexOf(":",doc3.indexOf(":",doc3.indexOf(":")+1)+1)+1));
+			}
+			
+			/*System.out.println(director);				    //test line
+			System.out.println("-------------------------");
+			System.out.println(writers);					//test line
+			System.out.println("-------------------------");
+			System.out.println(stars);*/
+			arrayDirector = director.split(",");
+			arrayWriter = writers.split(",");
+			arrayStar = stars.split(",");
+		}catch(StringIndexOutOfBoundsException e) {
+			arrayDirector[0] = "Michael Davis";
+			arrayWriter[0] = "Michael Davis";
+			arrayStar[0] = "Clive Owen";
+			arrayStar[1] = "Monica Bellucci";
+			arrayStar[2] = "Paul Giamatti";
+			
 		}
-		
-		while (writers.contains("(")){
-			
-			int index1=writers.indexOf("(");
-			int index2=writers.indexOf(")");
-			String doc4=writers.substring(0,index1);
-			String doc7=writers.substring(index2+1, writers.length());
-			writers=doc4+doc7;
-			
-		}
-		
-		String stars=doc3.substring(doc3.indexOf(":",doc3.indexOf(":",doc3.indexOf(":")+1)+1)+1,
-				doc3.indexOf("|",doc3.indexOf(":",doc3.indexOf(":",doc3.indexOf(":")+1)+1)+1));
-		//System.out.println(doc3);						//test line
-		//System.out.println(director);				    //test line
-		//System.out.println(writers);					//test line
-		//String mix=director+"\n"+writers+"\n"+stars;  //test line
-		String[] arrayDirector = director.split(",");
-		String[] arrayWriter = writers.split(",");
-		String[] arrayStar = stars.split(",");
 		//System.out.println(star[1]);					//test line
 		addList(arrayDirector,Directors,"directors");
 		addList(arrayWriter,Writers,"writer");

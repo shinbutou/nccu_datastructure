@@ -7,16 +7,16 @@ public class Sequence {
 	
 	public Sequence(){
 		this.lst = RequestGoogle.Results;
+		
+			
     }
 	
-	/*public void add(UrlResult UrlResult){
-		lst.add(UrlResult);
-		System.out.println("Done");	
-    }*/
-	
 	//quick sort
-	public void sort(){
+	public void sortAndOutput(){
 		quickSort(0, lst.size()-1);
+		//output();
+		//output20();
+		outputAllInfos();
 		//System.out.println("Done");
 	}
 	
@@ -42,10 +42,7 @@ public class Sequence {
 			}
 			swap(swapindex,rightbound);
 			quickSort(leftbound,swapindex-1);
-			quickSort(swapindex+1,rightbound);
-		
-			
-		
+			quickSort(swapindex+1,rightbound);			
 	}
 	
 	
@@ -86,5 +83,49 @@ public class Sequence {
 		}
 		
 		System.out.println(sb.toString());	
+	}
+	
+	
+	public void outputAllInfos() {
+		
+		System.out.print("Director(s):");
+		for(int i = 0; i < IMDBQuery.Directors.size(); i++) {
+			
+			if(i==0) {
+			System.out.print(IMDBQuery.Directors.get(i).name);
+			}
+			else {
+				System.out.print(","+IMDBQuery.Directors.get(i).name);
+			}
+			
+		}
+		System.out.print("\n");
+		
+		
+		System.out.print("Writer(s):");
+		for(int i = 0; i < IMDBQuery.Writers.size(); i++) {
+			
+			if(i==0) {
+			System.out.print(IMDBQuery.Writers.get(i).name);
+			}
+			else {
+				System.out.print(","+IMDBQuery.Writers.get(i).name);
+			}
+		}
+		System.out.print("\n");
+		
+		
+		System.out.print("Stars(s):");
+		for(int i = 0; i < IMDBQuery.Stars.size(); i++) {
+			
+			if(i==0) {
+			System.out.print(IMDBQuery.Stars.get(i).name);
+			}
+			else {
+				System.out.print(","+IMDBQuery.Stars.get(i).name);
+			}
+		}
+		System.out.print("\n");
+		output20();
 	}
 }

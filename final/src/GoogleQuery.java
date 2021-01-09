@@ -10,17 +10,17 @@ import java.net.URL;
 
 import java.net.URLConnection;
 
+
+
 import java.util.*;
 
-
-
-/*import org.jsoup.Jsoup;
+import org.jsoup.Jsoup;
 
 import org.jsoup.nodes.Document;
 
 import org.jsoup.nodes.Element;
 
-import org.jsoup.select.Elements*/
+import org.jsoup.select.Elements;
 
 public class GoogleQuery {
 
@@ -30,12 +30,11 @@ public class GoogleQuery {
 
 	public String content;
 	
-	/*public GoogleQuery(){
+	public GoogleQuery(){
 		
 		this.url_google = "https://www.google.com/search?q=top+gun+Tom+Scott+'film'or'series'or'television'or'movie'+-site:www.imdb.com+-site:www.rottentomatoes.com+-site:wikipedia.org+-site:www.pinterest.com+-site:www.amazon.com";	
 	}
-    */
-	
+    
 	
 	public GoogleQuery(String searchKeyword){
 		
@@ -44,7 +43,7 @@ public class GoogleQuery {
 
 	
 
-		/*private String fetchContent() throws IOException
+		private String fetchContent() throws IOException
 
 		{
 			String retVal = "";
@@ -54,12 +53,12 @@ public class GoogleQuery {
 			URLConnection conn = u.openConnection();
 			conn.setRequestProperty("User-agent","Chrome/7.0.517.44 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2)");
 			
-			try {
+			/*try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 	
 	
 			InputStream in = conn.getInputStream();
@@ -75,73 +74,9 @@ public class GoogleQuery {
 	
 			}
 			return retVal;
-		}*/
-	
-	 public List<UrlTempResult> fetchContent_url() throws IOException{
-		  
-			URL u = new URL(url_google);
-			URLConnection conn = u.openConnection();
-			conn.setRequestProperty("User-agent","Chrome/7.0.517.44 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2)");
-			
-			try {
-				Thread.sleep(2000);
-			} 
-			catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			InputStream in = conn.getInputStream();
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-			String retVal = "";
-			String line = null;
-			
-			while ((line = br.readLine()) != null){
-				
-			    retVal = retVal + line + "\n";
-			    
-			}
-			
-			//System.out.println(retVal);											//test line
-			
-			List<UrlTempResult> tempList = new ArrayList<UrlTempResult>();
-			
-			
-			
-			int headOfUrl=0;
-			int tailOfUrl=0;
-			String searchUrl = "";
-			UrlTempResult temp;
-			int numberOfUrl = 10;
-			double urlWeight;
-			
-			for(double i = 0; i < numberOfUrl; i++) {
-				
-				
-				
-				urlWeight = (10-i)/10 ;
-				
-				
-				if (i==0) {
-					headOfUrl = retVal.indexOf("<a href=\"/url?q=");
-				}
-				else {
-					headOfUrl = retVal.indexOf("<a href=\"/url?q=", tailOfUrl);
-				}
-																//test line
-				tailOfUrl = retVal.indexOf("&amp", headOfUrl);
-				searchUrl = retVal.substring(headOfUrl+16, tailOfUrl);
-				temp = new UrlTempResult(searchUrl, urlWeight);
-				tempList.add(temp);
-				
-			
-			}
-			//System.out.println(tempList);											//test line
-			return tempList; 
-			
-	    }
+		}
 	 
-	/*public Elements query() throws IOException
+	public List<UrlTempResult> query() throws IOException
 
 	{
 
@@ -152,24 +87,50 @@ public class GoogleQuery {
 			content= fetchContent();
 
 		}
-
-		
-		
 		Document doc = Jsoup.parse(content);
 		//System.out.println(content);				//test line
-		Elements doc2 = doc.select(".kCrYT");
-		//String doc3 = doc2.text();				//test line
+		Elements doc2 = doc.select("div.kCrYT");
+		//System.out.println();  						//test line
+		//System.out.println(doc2);
+		//System.out.println(doc2);
 		
+		List<UrlTempResult> tempList = new ArrayList<UrlTempResult>();
 		
-		System.out.println();  						//test line
-		System.out.println(doc2);
-		System.out.println(url_google); 			//test line
-		System.out.println();  	
-		return doc2;
-
-	}*/
-
-		
-	
-
+		int numberOfUrl = 10;
+		double count = 1;
+		String url = "";
+		String titleOfUrl = "";
+		String topNameOfUrl = "";
+		String introOfUrl = "";
+		double urlWeight = (11-count)/10;
+		for(Element li : doc2) {
+			UrlTempResult temp;
+			//System.out.println("------------------------");
+			//System.out.println(count);
+			//System.out.println(li.select(".UPmit").text());
+			//System.out.println(li.select(".UPmit").text().indexOf("›"));
+			
+			if (count %2 !=0) {
+				url = li.select("a").attr("href");
+				titleOfUrl = li.select("a").select(".vvjwJb").text();
+				topNameOfUrl = li.select(".UPmit").text().substring(0,li.select(".UPmit").text().indexOf("›"));
+				url = url.substring(url.indexOf("=")+1,url.indexOf("&sa"));
+				//System.out.println(titleOfUrl + "," + url+","+topNameOfUrl+","+introOfUrl);
+				
+			}
+			else{
+				introOfUrl = li.select(".s3v9rd").text();
+				//System.out.println(introOfUrl);
+				temp = new UrlTempResult(topNameOfUrl, titleOfUrl, url, urlWeight, introOfUrl);
+				tempList.add(temp);
+			}
+			if(count==numberOfUrl) {
+				break;
+			}
+			count++;
+		}
+			//System.out.println(tempList);								//test line
+			return tempList; 
+	}
 }
+
